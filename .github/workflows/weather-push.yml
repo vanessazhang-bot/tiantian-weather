@@ -1,0 +1,29 @@
+name: Daily Weather Push
+
+on:
+  schedule:
+    - cron: '30 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  push-weather:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm ci
+      - run: |
+          cat > config.json << 'EOF'
+          {
+            "openweather": { "enabled": true, "key": "${{ secrets.OPENWEATHER_KEY }}" },
+            "couple": {
+              "enabled": true,
+              "my_pushkey": "${{ secrets.MY_PUSHKEY }}",
+              "partner_name": "${{ secrets.PARTNER_NAME }}",
+              "partner_pushkey": "${{ secrets.PARTNER_PUSHKEY }}"
+            }
+          }
+          EOF
+      - run: node couple-weather.js
