@@ -1,0 +1,28 @@
+{
+  "city": "深圳",
+  "reminder_time": "08:30",
+  "notification": {
+    "service": "pushdeer"
+  },
+  "openweather": {
+    "enabled": true,
+    "key": "你的OpenWeather API key"
+  },
+  "couple": {
+    "enabled": true,
+    "service": "pushdeer",
+    "my_pushkey": "你的PushDeer key",
+    "partner_name": "另一半的称呼",
+    "partner_pushkey": "另一半的PushDeer key",
+    "partner_city": "深圳",
+    "love_quotes": [
+      "今天也想见到你，谁也别想拦着。",
+      "你是我所有的少女情怀和心之所向。",
+      "我想和你一起看日出日落，数星星月亮。"
+    ]
+  },
+  "pushdeer": {
+    "enabled": true,
+    "pushkey": "你的PushDeer key,另一半的PushDeer key"
+  }
+}
