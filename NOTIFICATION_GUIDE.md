@@ -155,7 +155,7 @@
   },
   "pushdeer": {
     "enabled": true,
-    "pushkey": "PDU1234567890abcdefghijklmnopqrstuvwxyz"
+    "pushkey": "你的PushKey"
   },
   "bark": {
     "enabled": false,
@@ -163,7 +163,7 @@
   },
   "serverchan": {
     "enabled": false,
-    "sendkey": "SCT1234567890abcdefghijklmnopqrstuvwxyz"
+    "sendkey": "你的SendKey"
   },
   "telegram": {
     "enabled": false,
@@ -221,3 +221,4 @@ docker-compose up -d
 然后将 API 地址改为您的自建地址。
 
 需要帮助？查看完整文档：`README.md`
+
