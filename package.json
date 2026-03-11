@@ -1,7 +1,7 @@
 {
-  "name": "tiantian-assistant",
+  "name": "tiantian-weather",
   "version": "1.0.0",
-  "description": "天天生活助理 - 天气查询和任务管理",
+  "description": "天天天气助手 - 智能天气推送服务",
   "main": "api/index.js",
   "scripts": {
     "start": "node local-scheduler.js",

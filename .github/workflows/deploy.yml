@@ -1,12 +1,13 @@
-name: Deploy to Vercel
+name: Daily Weather Push
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    # 每天 UTC 00:30 (北京时间 08:30)
+    - cron: '30 0 * * *'
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  push-weather:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,9 +20,31 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Deploy to Vercel
-        uses: vercel/action-deploy@v1
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Create config
+        run: |
+          cat > config.json << 'EOF'
+          {
+            "city": "深圳",
+            "reminder_time": "08:30",
+            "notification": { "service": "pushdeer" },
+            "openweather": {
+              "enabled": true,
+              "key": "${{ secrets.OPENWEATHER_KEY }}"
+            },
+            "couple": {
+              "enabled": true,
+              "service": "pushdeer",
+              "my_pushkey": "${{ secrets.MY_PUSHKEY }}",
+              "partner_name": "${{ secrets.PARTNER_NAME }}",
+              "partner_pushkey": "${{ secrets.PARTNER_PUSHKEY }}",
+              "partner_city": "深圳"
+            },
+            "pushdeer": {
+              "enabled": true,
+              "pushkey": "${{ secrets.MY_PUSHKEY }},${{ secrets.PARTNER_PUSHKEY }}"
+            }
+          }
+          EOF
+      
+      - name: Push weather
+        run: node couple-weather.js
