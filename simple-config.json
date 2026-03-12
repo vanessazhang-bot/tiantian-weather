@@ -1,0 +1,23 @@
+{
+  "openweather_key": "你的OpenWeather_API_Key",
+  "ai": {
+    "provider": "openai",
+    "api_key": "你的AI_API_Key",
+    "model": "gpt-3.5-turbo",
+    "base_url": "https://api.openai.com/v1"
+  },
+  "users": [
+    {
+      "name": "宝宝",
+      "pushkey": "你的PushDeer_Key",
+      "style": "俏皮可爱的语气，带点毒鸡汤式的正能量",
+      "extra": "可以加上今天的工作提醒"
+    },
+    {
+      "name": "黄sir",
+      "pushkey": "黄sir的PushDeer_Key",
+      "style": "温柔甜蜜的情话风格",
+      "extra": "适合情侣间的早安问候"
+    }
+  ]
+}

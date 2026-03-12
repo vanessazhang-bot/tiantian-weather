@@ -1,0 +1,52 @@
+name: AI Weather Push
+
+on:
+  schedule:
+    # 每天 UTC 00:30 (北京时间 08:30)
+    - cron: '30 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  push-weather:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Create simple config
+        run: |
+          cat > simple-config.json << 'EOF'
+          {
+            "openweather_key": "${{ secrets.OPENWEATHER_KEY }}",
+            "ai": {
+              "provider": "openai",
+              "api_key": "${{ secrets.AI_API_KEY }}",
+              "model": "gpt-3.5-turbo",
+              "base_url": "https://api.openai.com/v1"
+            },
+            "users": [
+              {
+                "name": "宝宝",
+                "pushkey": "${{ secrets.MY_PUSHKEY }}",
+                "style": "俏皮可爱的语气，带点毒鸡汤式的正能量，幽默风趣",
+                "extra": "加上穿衣建议和出行提醒，最后来一句激励的话"
+              },
+              {
+                "name": "${{ secrets.PARTNER_NAME }}",
+                "pushkey": "${{ secrets.PARTNER_PUSHKEY }}",
+                "style": "温柔甜蜜的情话风格，浪漫温馨",
+                "extra": "加上一句情话，表达关心和爱意"
+              }
+            ]
+          }
+          EOF
+      
+      - name: Push AI weather
+        run: node ai-weather.js
