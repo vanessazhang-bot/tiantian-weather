@@ -45,7 +45,7 @@ jobs:
               {
                 "id": "user_001",
                 "name": "宝宝",
-                "pushkey": "${{ secrets.USER1_PUSHKEY }}",
+                "pushkey": "${{ secrets.MY_PUSHKEY }}",
                 "useIP": true,
                 "messageStyle": {
                   "titleTemplate": "🌤️ 宝，今天天气来啦～",
@@ -60,8 +60,8 @@ jobs:
               },
               {
                 "id": "user_002",
-                "name": "黄sir",
-                "pushkey": "${{ secrets.USER2_PUSHKEY }}",
+                "name": "${{ secrets.PARTNER_NAME }}",
+                "pushkey": "${{ secrets.PARTNER_PUSHKEY }}",
                 "useIP": true,
                 "messageStyle": {
                   "titleTemplate": "🌤️ 早安呀，{name}～",
