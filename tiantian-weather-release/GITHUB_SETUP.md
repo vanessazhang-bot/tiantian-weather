@@ -8,12 +8,12 @@
 
 3. 点击 **New repository secret**，添加以下4个密钥：
 
-| Secret名称 | 说明 |
+| Secret名称 | 值 |
 |-----------|-----|
-| `OPENWEATHER_KEY` | 你的OpenWeather API Key |
-| `MY_PUSHKEY` | 你的PushDeer Key |
-| `PARTNER_PUSHKEY` | 对方的PushDeer Key |
-| `PARTNER_NAME` | 对方的称呼 |
+| `OPENWEATHER_KEY` | 4b4c834682131ca25cce4759d44c46aa |
+| `MY_PUSHKEY` | PDU39795TSijic5tat748Cv1sb0aGqi8sNbnoqxWm |
+| `PARTNER_PUSHKEY` | PDU39813TTmaIqHJB5wSpFJcnsWGhDny9EcEZFYCP |
+| `PARTNER_NAME` | 黄sir |
 
 4. 添加完成后，GitHub Actions会自动运行
 
