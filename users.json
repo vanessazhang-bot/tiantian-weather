@@ -41,6 +41,27 @@
         "time": "08:30"
       },
       "enabled": true
+    },
+    {
+      "id": "user_mmn6xuos6ai",
+      "name": "培培",
+      "pushkey": "PDU39817TTAnZE8en5vjQwlEeKMF7XfW9G3aOZPD0",
+      "city": "重庆",
+      "useIP": false,
+      "messageStyle": {
+        "titleTemplate": "🌤️ 今天天气来啦～",
+        "quoteType": "funny",
+        "quoteTitle": "🍵 今天抽风了嘛",
+        "tone": "playful",
+        "showWeatherDetails": true,
+        "showClothingAdvice": true,
+        "showTravelTips": true
+      },
+      "schedule": {
+        "enabled": true,
+        "time": "08:30"
+      },
+      "enabled": true
     }
   ],
   "quotes": {

@@ -119,7 +119,10 @@ class CLI {
     
     const testNow = await question('\n是否立即测试推送？ (y/n): ');
     if (testNow.toLowerCase() === 'y') {
-      await this.weatherService.pushToUser(user.id);
+      // 重新创建 weatherService 以加载新用户
+      const MultiWeatherService = require('./multi-weather.js');
+      const weatherService = new MultiWeatherService();
+      await weatherService.pushToUser(user.id);
     }
   }
 

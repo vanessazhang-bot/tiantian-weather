@@ -88,6 +88,8 @@ class MultiWeatherService {
    * 推送所有用户天气
    */
   async pushAllUsers() {
+    // 重新加载用户配置，确保获取最新数据
+    this.userManager = new UserManager();
     const users = this.userManager.getAllUsers();
     
     if (users.length === 0) {
