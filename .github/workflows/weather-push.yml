@@ -1,0 +1,50 @@
+name: Daily Weather Push
+
+on:
+  schedule:
+    # 每天 UTC 00:30 (北京时间 08:30)
+    - cron: '30 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  push-weather:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Create config
+        run: |
+          cat > config.json << 'EOF'
+          {
+            "city": "深圳",
+            "reminder_time": "08:30",
+            "notification": { "service": "pushdeer" },
+            "openweather": {
+              "enabled": true,
+              "key": "${{ secrets.OPENWEATHER_KEY }}"
+            },
+            "couple": {
+              "enabled": true,
+              "service": "pushdeer",
+              "my_pushkey": "${{ secrets.MY_PUSHKEY }}",
+              "partner_name": "${{ secrets.PARTNER_NAME }}",
+              "partner_pushkey": "${{ secrets.PARTNER_PUSHKEY }}",
+              "partner_city": "深圳"
+            },
+            "pushdeer": {
+              "enabled": true,
+              "pushkey": "${{ secrets.MY_PUSHKEY }},${{ secrets.PARTNER_PUSHKEY }}"
+            }
+          }
+          EOF
+      
+      - name: Push weather
+        run: node couple-weather.js
