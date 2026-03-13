@@ -2,7 +2,10 @@ name: Daily Weather Push
 
 on:
   schedule:
+    # 黄sir: 08:30 北京 = 00:30 UTC
     - cron: '30 0 * * *'
+    # 宝宝: 09:00 北京 = 01:00 UTC
+    - cron: '0 1 * * *'
   workflow_dispatch:
 
 jobs:
@@ -14,16 +17,62 @@ jobs:
         with:
           node-version: '18'
       - run: npm install
-      - run: |
+      
+      - name: Create config
+        run: |
           cat > config.json << 'EOF'
           {
-            "openweather": { "enabled": true, "key": "${{ secrets.OPENWEATHER_KEY }}" },
-            "couple": {
-              "enabled": true,
-              "my_pushkey": "${{ secrets.MY_PUSHKEY }}",
-              "partner_name": "${{ secrets.PARTNER_NAME }}",
-              "partner_pushkey": "${{ secrets.PARTNER_PUSHKEY }}"
+            "openweather": { "enabled": true, "key": "${{ secrets.OPENWEATHER_KEY }}" }
+          }
+          EOF
+      
+      - name: Create users config
+        run: |
+          cat > users.json << 'EOF'
+          {
+            "users": [
+              {
+                "id": "user_001",
+                "name": "宝宝",
+                "pushkey": "${{ secrets.MY_PUSHKEY }}",
+                "useIP": true,
+                "messageStyle": {
+                  "titleTemplate": "🌤️ 宝，今天天气来啦～",
+                  "quoteType": "inspirational",
+                  "quoteTitle": "🍵 喝点毒鸡汤",
+                  "tone": "playful"
+                },
+                "schedule": { "enabled": true, "time": "09:00" },
+                "enabled": true
+              },
+              {
+                "id": "user_002",
+                "name": "${{ secrets.PARTNER_NAME }}",
+                "pushkey": "${{ secrets.PARTNER_PUSHKEY }}",
+                "useIP": true,
+                "messageStyle": {
+                  "titleTemplate": "🌤️ 早安呀，{name}～",
+                  "quoteType": "love",
+                  "quoteTitle": "💕 悄悄话",
+                  "tone": "sweet"
+                },
+                "schedule": { "enabled": true, "time": "08:30" },
+                "enabled": true
+              }
+            ],
+            "quotes": {
+              "inspirational": [
+                "今天的努力，是幸运的伏笔。",
+                "你比你想象的更强大。",
+                "星光不问赶路人，时光不负有心人。"
+              ],
+              "love": [
+                "今天也想见到你，谁也别想拦着。",
+                "你是我所有的少女情怀和心之所向。"
+              ]
             }
           }
           EOF
-      - run: node couple-weather.js
+      
+      - name: Run scheduled push
+        run: node scheduled-push.js
