@@ -11,14 +11,25 @@ on:
 jobs:
   push-weather:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # 消除 Node 版本弃用警告
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout 代码仓库
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'   # or '18' or another supported version
-      - run: npm install
-      
-      - name: Create config
+          node-version: '20' # 稳定版 LTS
+          cache: 'npm' # 缓存 npm 依赖，加速构建
+
+      - name: 安装项目依赖
+        run: npm install
+        # 捕获依赖安装错误
+        continue-on-error: false
+
+      - name: Create config(天气API配置)
         run: |
           cat > config.json << 'EOF'
           {
