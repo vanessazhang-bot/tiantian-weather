@@ -7,83 +7,79 @@ on:
     # 宝宝: 09:00 北京 = 01:00 UTC
     - cron: '0 1 * * *'
   workflow_dispatch:
+    inputs:
+      push_target:
+        description: '推送对象: partner=黄sir, me=宝宝, both=全部'
+        required: false
+        default: 'both'
 
 jobs:
   push-weather:
     runs-on: ubuntu-latest
-    env:
-      TZ: Asia/Shanghai
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # 消除 Node 版本弃用警告
     steps:
-      - name: Checkout 代码仓库
-        uses: actions/checkout@v4
-
-      - name: 设置 Node.js 环境
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: '20' # 稳定版 LTS
-          cache: 'npm' # 缓存 npm 依赖，加速构建
+          node-version: '18'
 
-      - name: 安装项目依赖
+      - name: Install dependencies
         run: npm install
-        # 捕获依赖安装错误
-        continue-on-error: false
 
-      - name: Create config(天气API配置)
+      - name: Create config.json
         run: |
-          cat > config.json << 'EOF'
+          cat > config.json << 'CONFIGEOF'
           {
-            "openweather": { "enabled": true, "key": "${{ secrets.OPENWEATHER_KEY }}" }
-          }
-          EOF
-      
-      - name: Create users config
-        run: |
-          cat > users.json << 'EOF'
-          {
-            "users": [
-              {
-                "id": "user_001",
-                "name": "宝宝",
-                "pushkey": "${{ secrets.MY_PUSHKEY }}",
-                "useIP": true,
-                "messageStyle": {
-                  "titleTemplate": "🌤️ 宝，今天天气来啦～",
-                  "quoteType": "inspirational",
-                  "quoteTitle": "🍵 喝点毒鸡汤",
-                  "tone": "playful"
-                },
-                "schedule": { "enabled": true, "time": "09:00" },
-                "enabled": true
-              },
-              {
-                "id": "user_002",
-                "name": "${{ secrets.PARTNER_NAME }}",
-                "pushkey": "${{ secrets.PARTNER_PUSHKEY }}",
-                "useIP": true,
-                "messageStyle": {
-                  "titleTemplate": "🌤️ 早安呀，{name}～",
-                  "quoteType": "love",
-                  "quoteTitle": "💕 悄悄话",
-                  "tone": "sweet"
-                },
-                "schedule": { "enabled": true, "time": "08:30" },
-                "enabled": true
-              }
-            ],
-            "quotes": {
-              "inspirational": [
-                "今天的努力，是幸运的伏笔。",
-                "你比你想象的更强大。",
-                "星光不问赶路人，时光不负有心人。"
-              ],
-              "love": [
+            "city": "深圳",
+            "openweather": {
+              "enabled": true,
+              "key": "OPENWEATHER_KEY_PLACEHOLDER"
+            },
+            "couple": {
+              "enabled": true,
+              "partner_name": "PARTNER_NAME_PLACEHOLDER",
+              "my_pushkey": "MY_PUSHKEY_PLACEHOLDER",
+              "partner_pushkey": "PARTNER_PUSHKEY_PLACEHOLDER",
+              "love_quotes": [
                 "今天也想见到你，谁也别想拦着。",
-                "你是我所有的少女情怀和心之所向。"
+                "你是我所有的少女情怀和心之所向。",
+                "我想和你一起看日出日落，数星星月亮。",
+                "有你的地方都是美丽的风景。",
+                "每天睁开眼就想见到你。"
               ]
             }
           }
-          EOF
-      
-      - name: Run scheduled push
-        run: node scheduled-push.js
+          CONFIGEOF
+          # 替换占位符为实际 Secret 值
+          sed -i "s|OPENWEATHER_KEY_PLACEHOLDER|${{ secrets.OPENWEATHER_KEY }}|g" config.json
+          sed -i "s|PARTNER_NAME_PLACEHOLDER|${{ secrets.PARTNER_NAME }}|g" config.json
+          sed -i "s|MY_PUSHKEY_PLACEHOLDER|${{ secrets.MY_PUSHKEY }}|g" config.json
+          sed -i "s|PARTNER_PUSHKEY_PLACEHOLDER|${{ secrets.PARTNER_PUSHKEY }}|g" config.json
+
+      - name: Determine push target
+        id: target
+        run: |
+          HOUR=$(date -u +%H)
+          MIN=$(date -u +%M)
+          echo "Current UTC time: ${HOUR}:${MIN}"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            INPUT="${{ github.event.inputs.push_target }}"
+            TARGET="${INPUT:-both}"
+          elif [ "$HOUR" = "0" ]; then
+            TARGET="partner"
+          elif [ "$HOUR" = "1" ]; then
+            TARGET="me"
+          else
+            TARGET="both"
+          fi
+
+          echo "Push target: $TARGET"
+          echo "target=$TARGET" >> $GITHUB_OUTPUT
+
+      - name: Push to partner (黄sir 08:30 北京)
+        if: steps.target.outputs.target == 'partner' || steps.target.outputs.target == 'both'
+        run: node push-partner.js
+
+      - name: Push to me (宝宝 09:00 北京)
+        if: steps.target.outputs.target == 'me' || steps.target.outputs.target == 'both'
+        run: node push-me.js
